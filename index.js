@@ -27,11 +27,11 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(userRoutes);
 app.use(productRoutes);
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+export default app;
