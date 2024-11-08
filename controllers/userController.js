@@ -29,8 +29,9 @@ export const createUser = async (req, res) => {
       email: req.body.email,
       password: hashedPassword,
       confirmPassword: hashedPassword,
-      age: req.body.age,
+      born_date: req.body.born_date,
       gender: req.body.gender,
+      createdAt: Date.now(),
     });
     const user = await newUser.save();
     res.status(200).json({
@@ -41,8 +42,9 @@ export const createUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        age: user.age,
+        born_date: user.born_date,
         gender: user.gender,
+        createdAt: user.createdAt,
       },
     });
   } catch (err) {
@@ -80,8 +82,9 @@ export const login = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        age: user.age,
+        born_date: user.born_date,
         gender: user.gender,
+        createdAt: user.createdAt,
       },
       token: 'Bearer ' + token,
     });
@@ -106,9 +109,9 @@ export const getAllUsers = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          age: user.age,
+          born_date: user.born_date,
           gender: user.gender,
-          date: user.date,
+          createdAt: user.createdAt,
         };
       }),
     });
@@ -131,7 +134,7 @@ export const getUserById = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        age: user.age,
+        born_date: user.born_date,
         gender: user.gender,
         date: user.date,
       },
