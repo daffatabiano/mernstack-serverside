@@ -1,12 +1,9 @@
 import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
-import multer from 'multer';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
-import uploadRoutes from './routes/uploadRoutes.js';
-import midTransClient from 'midtrans-client';
 import orderRoutes from './routes/orderRoutes.js';
 
 dotenv.config();
@@ -36,7 +33,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(userRoutes);
 app.use(productRoutes);
-app.use(uploadRoutes);
 app.use(orderRoutes);
 
 app.listen(port, () => {
