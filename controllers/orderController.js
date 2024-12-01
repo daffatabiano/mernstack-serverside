@@ -56,7 +56,7 @@ export const collectOrders = async (req, res) => {
       });
     }
 
-    order.status = false;
+    order.status = 'collected';
     await order.save();
     return res.status(200).json({
       success: true,
@@ -72,9 +72,38 @@ export const collectOrders = async (req, res) => {
   }
 };
 
+export const cancelledOrders = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'Order not found',
+      });
+    }
+
+    order.status = 'cancelled';
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Order cancelled successfully',
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: err,
+    });
+  }
+};
+
 export const historyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ status: false });
+    const orders = await Order.find({});
 
     if (!orders)
       return res.status(404).json({
@@ -100,7 +129,7 @@ export const historyOrders = async (req, res) => {
 
 export const clearHistoryOrders = async (req, res) => {
   try {
-    await Order.deleteMany({ status: false });
+    await Order.deleteMany({});
     return res.status(200).json({
       success: true,
       statusCode: 200,
