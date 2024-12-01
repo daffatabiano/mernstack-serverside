@@ -29,6 +29,23 @@ router.post('/api/v1/midtrans', async (req, res) => {
     credit_card: {
       secure: true,
     },
+    customer_details: {
+      first_name: req.body?.name?.split(' ')[0],
+      last_name: req.body.name?.split(' ')[1],
+      email: req.body.email,
+      phone: req.body.phone,
+    },
+    item_details: [
+      {
+        id: req.body.id,
+        price: req.body.pricePerItem,
+        quantity: req.body.quantity,
+        name: req.body.stuffName,
+        category: req.body.category,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ],
   };
   console.log(parameter);
   const token = await snap.createTransactionToken(parameter);
