@@ -21,7 +21,7 @@ router.post('/api/v1/product', createProduct);
 router.put('/api/v1/product/:id', updateProduct);
 router.delete('/api/v1/product/:id', deleteProduct);
 router.post('/api/v1/midtrans', async (req, res) => {
-  let { id, amount } = req.body;
+  let { id, amount, firstName, lastName, email, phone } = req.body;
 
   if (!id || !amount) {
     return res
@@ -37,6 +37,12 @@ router.post('/api/v1/midtrans', async (req, res) => {
       },
       credit_card: {
         secure: true,
+      },
+      customer_details: {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        phone: phone,
       },
     });
     res.status(200).json({ token });
