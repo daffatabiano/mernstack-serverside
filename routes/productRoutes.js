@@ -21,35 +21,28 @@ router.post('/api/v1/product', createProduct);
 router.put('/api/v1/product/:id', updateProduct);
 router.delete('/api/v1/product/:id', deleteProduct);
 router.post('/api/v1/midtrans', async (req, res) => {
-  let parameter = {
-    transaction_details: {
-      order_id: req.body.id,
-      gross_amount: req.body.amount,
-    },
-    credit_card: {
-      secure: true,
-    },
-    customer_details: {
-      first_name: req.body?.name?.split(' ')[0],
-      last_name: req.body.name?.split(' ')[1],
-      email: req.body.email,
-      phone: req.body.phone,
-    },
-    item_details: [
-      {
-        id: req.body.id,
-        price: req.body.pricePerItem,
-        quantity: req.body.quantity,
-        name: req.body.stuffName,
-        category: req.body.category,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+  let { id, amount } = req.body;
+
+  if (!id || !amount) {
+    return res
+      .status(400)
+      .json({ message: 'All required fields must be provided' });
+  }
+
+  try {
+    const token = await snap.createTransactionToken({
+      transaction_details: {
+        order_id: id,
+        gross_amount: amount,
       },
-    ],
-  };
-  console.log(parameter);
-  const token = await snap.createTransactionToken(parameter);
-  res.status(200).json({ token });
+      credit_card: {
+        secure: true,
+      },
+    });
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 export default router;
