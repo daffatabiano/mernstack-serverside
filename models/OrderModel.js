@@ -1,6 +1,18 @@
 import mongoose from 'mongoose';
 
 const OrderModel = new mongoose.Schema({
+  tableId: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
   amount: {
     type: Number,
     required: true,
@@ -13,6 +25,14 @@ const OrderModel = new mongoose.Schema({
     type: String,
     required: true,
     default: 'pending',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
