@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import otpRoutes from './routes/otpRoutes.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(userRoutes);
 app.use(productRoutes);
 app.use(orderRoutes);
+app.use(otpRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
