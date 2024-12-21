@@ -6,6 +6,7 @@ const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_ACCOUNT);
 
 export const sendOTP = async (req, res) => {
   const { phone } = req.body;
+
   try {
     const verification = await client.verify.v2
       .services(TWILIO_VERIFY_SERVICE_SID)
@@ -29,6 +30,7 @@ export const sendOTP = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   const { phone, code } = req.body;
+
   try {
     const verificationCheck = await client.verify.v2
       .services(TWILIO_VERIFY_SERVICE_SID)
