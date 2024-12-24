@@ -17,7 +17,7 @@ export const sendSms = async (phone, otp) => {
 
   const mailOptions = {
     from: process.env.EMAIL,
-    to: `${phone}@tmomail.net`,
+    to: `+${phone}@vtext.com`,
     subject: 'OTP Verification',
     html: `<p>Verification code: ${otp}</p>`,
   };
@@ -46,12 +46,9 @@ export const sendEmail = async (email, otp) => {
     html: `<p>Verification code: ${otp}</p>`,
   };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
-  } catch (error) {
-    console.error('Error sending email:', error);
-  }
+  await transporter
+    .sendMail(mailOptions)
+    .then((res) => console.log(res, 'result sendemail'));
 };
 
 export const sendOTP = async (req, res) => {
@@ -79,9 +76,9 @@ export const sendOTP = async (req, res) => {
       return res.status(400).json({ message: 'Invalid method' });
     }
 
-    res.status(200).json({ message: 'OTP sent successfully' });
+    return res.status(200).json({ message: 'OTP sent successfully' });
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({ message: 'Internal server error', err });
   }
 };
 
@@ -98,6 +95,8 @@ export const verifyOTP = async (req, res) => {
     }
 
     const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
+
+    console.log(user, hashedOtp, 'this is otp');
 
     if (user.otp !== hashedOtp) {
       return res.status(400).json({ message: 'Invalid OTP' });
