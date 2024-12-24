@@ -10,6 +10,9 @@ const customerSchema = new mongoose.Schema({
   email: {
     type: String,
   },
+  otp: {
+    type: String,
+  },
   voucher: {
     type: Array,
   },
