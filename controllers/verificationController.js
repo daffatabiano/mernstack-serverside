@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import User from '../models/customerModel.js';
+import jwt from 'jsonwebtoken';
 
 export const generateVerificationCode = () => {
   return crypto.randomInt(100000, 999999).toString(); // Generate a random 6-digit number
@@ -42,8 +43,19 @@ export const sendEmail = async (email, otp) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: 'OTP Verification',
-    html: `<p>Verification code: ${otp}</p>`,
+    subject: 'OTP Verification - Restaurant Management System',
+    html: `
+    <h1>Hello ${email},</h1>
+    <p>Don't share your OTP code with anyone. It is important to keep this code confidential to ensure the security of your account</p>
+    <br/>
+    <p>Verification code: <strong>${otp}</strong></p>
+    <br/>
+    <p>If your not request this code, please contact our support team immediately</p>
+    <p>Thank you.</p>
+    <br/>
+    <p>Best regards,</p>
+    <p>Restaurant Management System</p>
+    `,
   };
 
   await transporter
@@ -96,8 +108,6 @@ export const verifyOTP = async (req, res) => {
 
     const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
 
-    console.log(user, hashedOtp, 'this is otp');
-
     if (user.otp !== hashedOtp) {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
@@ -107,8 +117,11 @@ export const verifyOTP = async (req, res) => {
       { otp: null, otpExpiration: null },
       { upsert: true, new: true }
     );
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
-    res.status(200).json({ message: 'OTP verified successfully' });
+    res
+      .status(200)
+      .json({ message: 'OTP verified successfully', token: token, data: user });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal server error' });
