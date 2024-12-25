@@ -119,9 +119,11 @@ export const verifyOTP = async (req, res) => {
     );
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
-    res
-      .status(200)
-      .json({ message: 'OTP verified successfully', token: token, data: user });
+    res.status(200).json({
+      message: 'OTP verified successfully',
+      token: token,
+      data: user,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal server error' });
