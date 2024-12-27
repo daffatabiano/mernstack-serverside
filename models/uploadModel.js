@@ -2,17 +2,25 @@ import mongoose from 'mongoose';
 
 const uploadSchema = new mongoose.Schema(
   {
-    name: {
+    filename: {
       type: String,
       required: true,
     },
-    image: {
+    path: {
       type: String,
       required: true,
     },
-    url: {
+    size: {
+      type: Number,
+      required: true,
+    },
+    mimetype: {
       type: String,
       required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   { timestamps: true }
