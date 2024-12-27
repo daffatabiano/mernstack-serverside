@@ -1,37 +1,39 @@
 import path from 'path';
-import express from 'express';
 import fs from 'fs';
 
 export const uploadFiles = async (req, res) => {
-  const file = req.files?.file;
+  const { file } = req;
+  try {
+    const fileData = new File({
+      fileName: file.originalname,
+      filePath: file.path,
+      size: file.size,
+      mimetype: file.mimetype,
+    });
 
-  if (!file) {
-    return res.status(400).json({ message: 'No file was uploaded.' });
+    const savedFile = await fileData.save();
+    res
+      .status(200)
+      .json({ message: 'File uploaded successfully', file: savedFile });
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
   }
-
-  const fileName = file.name;
-
-  const filePath = path.join(process.cwd(), '../uploads', fileName);
-
-  file.mv(filePath, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Failed to upload file.' });
-    }
-
-    return res.status(200).json({ message: 'File uploaded successfully.' });
-  });
 };
 
-export const getImage = async (req, res) => {
-  const fileName = req.params.fileName;
-  const filePath = path.join(process.cwd(), '../upload', fileName);
+export const getFile = async (req, res) => {
+  try {
+    const file = await File.find({ fileName: req.params.fileName });
 
-  if (fs.existsSync(filePath)) {
-    return res.sendFile(filePath);
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    res.setHeader('Content-Type', file.mimetype);
+    res.send(fs.createReadStream(file.filePath));
+    res.status(200).json({ message: 'File fetched successfully', file });
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
   }
-
-  return res.status(404).json({ message: 'File not found' });
 };
 
 export const deleteFile = async (req, res) => {
