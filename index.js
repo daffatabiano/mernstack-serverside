@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 dotenv.config();
 
@@ -23,12 +24,14 @@ db.once('open', () => {
 app.use(cors());
 
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(userRoutes);
 app.use(productRoutes);
 app.use(orderRoutes);
 app.use(otpRoutes);
+app.use(uploadRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
