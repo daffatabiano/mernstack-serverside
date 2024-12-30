@@ -45,7 +45,7 @@ export const sendEmail = async (email, otp) => {
     to: email,
     subject: 'OTP Verification - Restaurant Management System',
     html: `
-    <h1>Hello ${email},</h1>
+    <h3>Hello ${email?.split('@')[0]},</h3>
     <p>Don't share your OTP code with anyone. It is important to keep this code confidential to ensure the security of your account</p>
     <br/>
     <p>Verification code: <strong>${otp}</strong></p>
