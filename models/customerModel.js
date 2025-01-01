@@ -19,6 +19,9 @@ const customerSchema = new mongoose.Schema({
   order: {
     type: Array,
   },
+  role: {
+    type: String,
+  },
 });
 
 export default mongoose.model('Customer', customerSchema);
