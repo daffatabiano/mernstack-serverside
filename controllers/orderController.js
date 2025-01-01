@@ -1,8 +1,23 @@
 import Order from '../models/OrderModel.js';
+import Customer from '../models/customerModel.js';
 
 export const createOrder = async (req, res) => {
   try {
     const newOrder = await Order.create(req.body);
+    const customer = await Customer.findOneAndUpdate({
+      $or: [{ phone: req.body.phone }, { email: req.body.email }],
+    });
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'Customer not found',
+      });
+    }
+
+    customer.order.push(newOrder);
+    await customer.save();
 
     return res.status(200).json({
       success: true,
