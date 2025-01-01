@@ -1,6 +1,8 @@
 import User from '../models/adminModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import Customer from '../models/customerModel.js';
+import Voucher from '../models/voucherModel.js';
 
 export const createUser = async (req, res) => {
   try {
@@ -204,6 +206,39 @@ export const deleteUser = async (req, res) => {
       statusCode: 200,
       message: 'User deleted successfully',
       data: user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: err,
+    });
+  }
+};
+
+export const giftVoucherCustomer = async (req, res) => {
+  try {
+    const customer = await Customer.findOneAndUpdate({
+      $or: [{ phone: req.params.phone }, { email: req.params.email }],
+    });
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    const giftVoucher = await Voucher.findById(req.params.id);
+
+    if (!giftVoucher) {
+      return res.status(404).json({ message: 'Voucher not found' });
+    }
+
+    customer.voucher.push(giftVoucher);
+    await customer.save();
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Voucher Sending Successfully',
+      data: giftVoucher,
     });
   } catch (err) {
     res.status(500).json({
