@@ -4,6 +4,7 @@ export const createProduct = async (req, res) => {
   const productExist = await Product.findOne({
     name: req.body.name.toLowerCase(),
   });
+
   if (productExist) {
     return res.status(400).json({
       success: false,
