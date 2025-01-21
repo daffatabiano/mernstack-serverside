@@ -33,21 +33,12 @@ export const createUser = async (req, res) => {
       confirmPassword: hashedPassword,
       born_date: req.body.born_date,
       gender: req.body.gender,
-      createdAt: Date.now(),
     });
     const user = await newUser.save();
     res.status(200).json({
       success: true,
       statusCode: 200,
       message: 'User created successfully',
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        born_date: user.born_date,
-        gender: user.gender,
-        createdAt: user.createdAt,
-      },
     });
   } catch (err) {
     res.status(500).json({
@@ -85,9 +76,10 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         born_date: user.born_date,
+        image: user.image,
         gender: user.gender,
-        createdAt: user.createdAt,
       },
+      user,
       token: 'Bearer ' + token,
     });
   } catch (err) {
@@ -152,25 +144,6 @@ export const getUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    if (req.body.password) {
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(req.body.password, salt);
-      req.body.confirmPassword = await bcrypt.hash(
-        req.body.confirmPassword,
-        salt
-      );
-      if (req.body.password !== req.body.confirmPassword) {
-        return res.status(400).json({
-          success: false,
-          statusCode: 400,
-          message: 'Passwords do not match',
-        });
-      }
-    } else {
-      delete req.body.password;
-      delete req.body.confirmPassword;
-    }
-
     if (!req.body) {
       return res.status(400).json({
         success: false,
@@ -188,6 +161,51 @@ export const updateUser = async (req, res) => {
       statusCode: 200,
       message: 'User updated successfully',
       data: user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: err,
+    });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    req.body.password = await bcrypt.hash(req.body.password, salt);
+    req.body.confirmPassword = await bcrypt.hash(
+      req.body.confirmPassword,
+      salt
+    );
+    if (req.body.password !== req.body.confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'Passwords do not match',
+      });
+    }
+  } else {
+    delete req.body.password;
+    delete req.body.confirmPassword;
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, statusCode: 400, message: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Password updated successfully',
     });
   } catch (err) {
     res.status(500).json({
