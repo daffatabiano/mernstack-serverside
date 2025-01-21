@@ -7,6 +7,7 @@ import {
   login,
   getAllUsers,
   giftVoucherCustomer,
+  changePassword,
 } from '../controllers/userController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 
@@ -18,6 +19,7 @@ router.get('/api/v1/users', verifyToken, getAllUsers);
 router.get('/api/v1/user/:id', verifyToken, getUserById);
 router.post('/api/v1/gift-voucher', verifyToken, giftVoucherCustomer);
 router.put('/api/v1/user/:id', verifyToken, updateUser);
+router.put('/api/v1/user-change-password/:id', verifyToken, changePassword);
 router.delete('/api/v1/user/:id', verifyToken, deleteUser);
 
 export default router;
