@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const adminSchema = mongoose.Schema(
   {
+    NIK: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     name: {
       type: String,
       required: true,
@@ -19,15 +24,19 @@ const adminSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+    },
+    role: {
+      type: String,
+      required: true,
+    },
     born_date: Date,
     gender: String,
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     versionKey: false,
+    timestamps: true,
   }
 );
 
