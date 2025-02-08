@@ -21,7 +21,7 @@ export const getCategories = async (req, res) => {
 export const createCategory = async (req, res) => {
   try {
     const categoryExist = await categoryModel.findOne({
-      name: req?.body?.name?.toLowerCase(),
+      label: req?.body?.label?.toLowerCase(),
     });
 
     if (categoryExist) {
@@ -37,7 +37,7 @@ export const createCategory = async (req, res) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      message: `${newCategory.name} created successfully`,
+      message: `${newCategory.label} created successfully`,
       data: newCategory,
     });
   } catch (err) {
@@ -81,7 +81,7 @@ export const deleteCategory = async (req, res) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      message: `${category.name} has been deleted successfully`,
+      message: `${category.label} has been deleted successfully`,
     });
   } catch (err) {
     res.status(500).json({
