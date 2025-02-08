@@ -60,6 +60,30 @@ export const getOrders = async (req, res) => {
   }
 };
 
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order)
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'Order not found',
+      });
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Order fetched successfully',
+      data: order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: error,
+    });
+  }
+};
+
 export const collectOrders = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
