@@ -2,8 +2,16 @@ import Product from '../models/productModel.js';
 
 export const createProduct = async (req, res) => {
   const productExist = await Product.findOne({
-    name: req.body.name.toLowerCase(),
+    name: req?.body?.name?.toLowerCase(),
   });
+
+  if (!req.body) {
+    return res.status(400).json({
+      success: false,
+      statusCode: 400,
+      message: 'No data provided',
+    });
+  }
 
   if (productExist) {
     return res.status(400).json({
@@ -32,13 +40,42 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const {
+      category,
+      page = 1,
+      limit = 10,
+      search,
+      sort = 'createdAt',
+    } = req.query;
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    let query = {};
+    if (category) query.category = category;
+    if (search) query.name = { $regex: search, $options: 'i' };
+
+    let sortOption = {};
+    if (sort === 'name_asc') sortOption = { name: 1 };
+    if (sort === 'name_desc') sortOption = { name: -1 };
+    if (sort === 'price_asc') sortOption = { price: 1 };
+    if (sort === 'price_desc') sortOption = { price: -1 };
+    if (sort === 'createdAt') sortOption = { createdAt: -1 };
+
+    const totalProducts = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limitNumber);
 
     res.status(200).json({
       success: true,
-      statusCode: 200,
-      message: 'Products fetched successfully',
       data: products,
+      pagination: {
+        totalProducts,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalProducts / limitNumber),
+      },
     });
   } catch (err) {
     res.status(500).json({
