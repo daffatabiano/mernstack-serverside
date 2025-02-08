@@ -36,7 +36,40 @@ export const createOrder = async (req, res) => {
 
 export const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({});
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
+      sort = 'createdAt',
+      pending,
+      collected,
+      cancelled,
+    } = req.query;
+
+    let query = {};
+
+    if (pending) query.status = 'pending';
+    if (collected) query.status = 'collected';
+    if (cancelled) query.status = 'cancelled';
+
+    if (search) {
+      query.name = { $regex: search, $options: 'i' };
+    }
+
+    let sortOption = {};
+    if (sort === 'name_asc') sortOption = { name: 1 };
+    if (sort === 'name_desc') sortOption = { name: -1 };
+    if (sort === 'price_asc') sortOption = { price: 1 };
+    if (sort === 'price_desc') sortOption = { price: -1 };
+    if (sort === 'createdAt') sortOption = { createdAt: -1 };
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const totalOrders = await Order.countDocuments(query);
+    const orders = await Order.find(query)
+      .sort(sortOption)
+      .skip(startIndex)
+      .limit(limit);
 
     if (!orders)
       return res.status(404).json({
@@ -49,6 +82,11 @@ export const getOrders = async (req, res) => {
       success: true,
       statusCode: 200,
       message: 'Orders fetched successfully',
+      pagination: {
+        totalOrders: totalOrders,
+        currentPage: page,
+        totalPage: Math.ceil(totalOrders / limit),
+      },
       data: orders,
     });
   } catch (error) {
