@@ -17,7 +17,7 @@ let snap = new midTransClient.Snap({
   serverKey: 'SB-Mid-server-xrqyBbFmyc1Oco4RkTstzmbj',
 });
 
-router.get('/api/v1/products', verifyToken, adminPermission, getProducts);
+router.get('/api/v1/products', getProducts);
 router.get(
   '/api/v1/products/:id',
   verifyToken,
