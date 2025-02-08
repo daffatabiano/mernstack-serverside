@@ -6,12 +6,14 @@ import {
   clearHistoryOrders,
   historyOrders,
   cancelledOrders,
+  getOrderById,
 } from '../controllers/orderController.js';
 
 const router = express.Router();
 
 router.post('/api/v1/order', createOrder); //client route
 router.get('/api/v1/orders', getOrders); // cashier route
+router.get('api/v1/order/:id', getOrderById); //cashier route
 router.put('/api/v1/cashier/collect-orders/:id', collectOrders); //cashier route
 router.delete('/api/v1/cashier/cancel-order/:id', cancelledOrders); //cashier route
 router.get('/api/v1/cashier/history-orders', historyOrders); //cashier route & client route

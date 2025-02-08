@@ -4,7 +4,6 @@ const adminSchema = mongoose.Schema(
   {
     NIK: {
       type: String,
-      required: true,
       unique: true,
     },
     name: {
@@ -29,7 +28,7 @@ const adminSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
+      default: null,
     },
     born_date: Date,
     gender: String,

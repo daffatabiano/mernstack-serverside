@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import User from '../models/customerModel.js';
+import Customer from '../models/customerModel.js';
 import jwt from 'jsonwebtoken';
 
 export const generateVerificationCode = () => {
@@ -71,7 +71,7 @@ export const sendOTP = async (req, res) => {
     const expirations = Date.now() + 5 * 60 * 1000; // 5 minutes
     const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
 
-    await User.findOneAndUpdate(
+    await Customer.findOneAndUpdate(
       { $or: [{ phone }, { email }] },
       { otp: hashedOtp, otpExpiration: expirations },
       { upsert: true, new: true }
@@ -98,7 +98,7 @@ export const verifyOTP = async (req, res) => {
   const { phone, email, otp } = req.body;
 
   try {
-    const user = await User.findOne({
+    const user = await Customer.findOne({
       $or: [{ phone }, { email }],
     });
 
@@ -112,7 +112,11 @@ export const verifyOTP = async (req, res) => {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
-    await User.findOneAndUpdate(
+    if (user.otpExpiration < Date.now()) {
+      return res.status(400).json({ message: 'OTP expired' });
+    }
+
+    await Customer.findOneAndUpdate(
       { $or: [{ phone }, { email }] },
       { otp: null, otpExpiration: null },
       { upsert: true, new: true }

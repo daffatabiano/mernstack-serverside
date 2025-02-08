@@ -10,6 +10,7 @@ import otpRoutes from './routes/otpRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 import voucherRoutes from './routes/voucherRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,6 +41,7 @@ app.use(otpRoutes);
 app.use(uploadRoutes);
 app.use(customerRoutes);
 app.use(voucherRoutes);
+app.use(categoryRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

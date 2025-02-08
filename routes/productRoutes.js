@@ -7,6 +7,8 @@ import {
   getProducts,
   updateProduct,
 } from '../controllers/productsController.js';
+import { adminPermission } from '../middlewares/adminPermission.js';
+import { verifyToken } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 
@@ -15,11 +17,21 @@ let snap = new midTransClient.Snap({
   serverKey: 'SB-Mid-server-xrqyBbFmyc1Oco4RkTstzmbj',
 });
 
-router.get('/api/v1/products', getProducts);
-router.get('/api/v1/products/:id', getProductById);
-router.post('/api/v1/product', createProduct);
-router.put('/api/v1/product/:id', updateProduct);
-router.delete('/api/v1/product/:id', deleteProduct);
+router.get('/api/v1/products', verifyToken, adminPermission, getProducts);
+router.get(
+  '/api/v1/products/:id',
+  verifyToken,
+  adminPermission,
+  getProductById
+);
+router.post('/api/v1/product', verifyToken, adminPermission, createProduct);
+router.put('/api/v1/product/:id', verifyToken, adminPermission, updateProduct);
+router.delete(
+  '/api/v1/product/:id',
+  verifyToken,
+  adminPermission,
+  deleteProduct
+);
 router.post('/api/v1/midtrans', async (req, res) => {
   let { id, amount, firstName, lastName, email, phone } = req.body;
 

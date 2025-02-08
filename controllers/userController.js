@@ -6,8 +6,13 @@ import Voucher from '../models/voucherModel.js';
 
 export const createUser = async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    if (!req.body.name || !req.body.email || !req.body.password) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'All fields are required',
+      });
+    }
 
     if (req.body.password !== req.body.confirmPassword) {
       return res.status(400).json({
@@ -17,7 +22,45 @@ export const createUser = async (req, res) => {
       });
     }
 
-    const oldUser = await User.findOne({ email: req.body.email });
+    if (req.body.password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'Password must be at least 6 characters',
+      });
+    }
+
+    if (req.body.NIK.length < 16) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'NIK must be at least 16 characters',
+      });
+    } else if (req.body.NIK.length > 16) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'NIK must be at most 16 characters',
+      });
+    }
+
+    const currentdate = new Date();
+    const bornDate = new Date(req.body.born_date);
+    const age = currentdate.getFullYear() - bornDate.getFullYear();
+    const monthDiff = currentdate.getMonth() - bornDate.getMonth();
+
+    if (age < 18 || (age === 18 && monthDiff < 0)) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'User must be at least 18 years old',
+      });
+    }
+
+    const oldUser = await User.findOne({
+      email: req.body.email,
+      NIK: req.body.NIK,
+    });
     if (oldUser) {
       return res.status(400).json({
         success: false,
@@ -26,15 +69,15 @@ export const createUser = async (req, res) => {
       });
     }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
     const newUser = new User({
-      name: req.body.name,
-      email: req.body.email,
+      ...req.body,
       password: hashedPassword,
       confirmPassword: hashedPassword,
-      born_date: req.body.born_date,
-      gender: req.body.gender,
     });
-    const user = await newUser.save();
+    await newUser.save();
     res.status(200).json({
       success: true,
       statusCode: 200,
@@ -44,7 +87,7 @@ export const createUser = async (req, res) => {
     res.status(500).json({
       success: false,
       statusCode: 500,
-      message: err,
+      message: 'Internal server error',
     });
   }
 };
@@ -52,6 +95,15 @@ export const createUser = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
+
+    if (!req.body.email || !req.body.password) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'All fields is required',
+      });
+    }
+
     if (!user) {
       return res
         .status(400)
@@ -70,15 +122,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      message: 'Login successful',
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        born_date: user.born_date,
-        image: user.image,
-        gender: user.gender,
-      },
+      message: 'Login Successfully',
       user,
       token: 'Bearer ' + token,
     });
@@ -206,6 +250,43 @@ export const changePassword = async (req, res) => {
       success: true,
       statusCode: 200,
       message: 'Password updated successfully',
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: err,
+    });
+  }
+};
+
+export const changeRole = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    const role = user.role;
+
+    if (role !== 'manager') {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'You are not allowed to change role',
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    if (!updatedUser) {
+      return res
+        .status(400)
+        .json({ success: false, statusCode: 400, message: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Role updated successfully',
     });
   } catch (err) {
     res.status(500).json({
