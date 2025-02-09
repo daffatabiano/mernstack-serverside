@@ -13,6 +13,14 @@ export const createProduct = async (req, res) => {
     });
   }
 
+  if (req.body.discount > 100) {
+    return res.status(400).json({
+      success: false,
+      statusCode: 400,
+      message: 'Discount cannot be more than 100%',
+    });
+  }
+
   if (productExist) {
     return res.status(400).json({
       success: false,
