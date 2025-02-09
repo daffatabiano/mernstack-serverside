@@ -24,6 +24,14 @@ export const createCategory = async (req, res) => {
       label: req?.body?.label?.toLowerCase(),
     });
 
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'No data provided',
+      });
+    }
+
     if (categoryExist) {
       return res.status(400).json({
         success: false,
