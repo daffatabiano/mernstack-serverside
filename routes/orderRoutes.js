@@ -7,12 +7,13 @@ import {
   historyOrders,
   cancelledOrders,
   getOrderById,
+  paymentOrder,
 } from '../controllers/orderController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 
-router.post('/api/v1/order', verifyToken, createOrder); //client route
+router.post('/api/v1/order', createOrder); //client route
 router.get('/api/v1/orders', verifyToken, getOrders); // cashier route
 router.get('api/v1/order/:id', verifyToken, getOrderById); //cashier route
 router.put('/api/v1/cashier/collect-orders/:id', verifyToken, collectOrders); //cashier route
@@ -23,5 +24,7 @@ router.delete(
   verifyToken,
   clearHistoryOrders
 ); //cashier route & client route
+
+router.post('/api/v1/midtrans', paymentOrder);
 
 export default router;
