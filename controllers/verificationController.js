@@ -120,7 +120,7 @@ export const verifyOTP = async (req, res) => {
       { $or: [{ phone }, { email }] },
       { otp: null, otpExpiration: null },
       { upsert: true, new: true }
-    );
+    ).select('+email');
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
     res.status(200).json({
