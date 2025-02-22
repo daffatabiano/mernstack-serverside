@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
-const OrderModel = new mongoose.Schema({
-  tableId: {
+const OrderItemSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId, // Pastikan ID tetap sesuai format MongoDB
+  category: {
     type: String,
     required: true,
   },
@@ -9,21 +10,29 @@ const OrderModel = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-  },
-  amount: {
+  price: {
     type: Number,
     required: true,
   },
-  orderData: {
-    type: [Object],
+  quantity: {
+    type: Number,
     required: true,
+  },
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  notes: {
+    type: String,
+    default: '',
   },
   status: {
     type: String,
-    required: true,
+    enum: ['pending', 'completed', 'canceled'],
     default: 'pending',
   },
   createdAt: {
@@ -36,4 +45,35 @@ const OrderModel = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('Order', OrderModel);
+const OrderSchema = new mongoose.Schema(
+  {
+    tableId: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    orderData: {
+      type: [OrderItemSchema], // Menggunakan sub-schema untuk order items
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'processing', 'completed', 'canceled'],
+      default: 'pending',
+    },
+  },
+  { timestamps: true } // Otomatis menambahkan createdAt & updatedAt
+);
+
+export default mongoose.model('Order', OrderSchema);
