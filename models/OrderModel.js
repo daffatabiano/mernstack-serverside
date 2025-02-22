@@ -17,7 +17,7 @@ const OrderModel = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  data: {
+  orderData: {
     type: [Object],
     required: true,
   },
