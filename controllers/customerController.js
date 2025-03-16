@@ -45,7 +45,10 @@ export const getCustomerProfile = async (req, res) => {
       success: true,
       statusCode: 200,
       message: 'Customer fetched successfully',
-      data: customer,
+      data: {
+        email: customer.email, // Add email here explicitly
+        ...customer.toObject(), // Spread the rest of the customer data
+      },
     });
   } catch (err) {
     return res.status(500).json({
