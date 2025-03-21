@@ -9,6 +9,14 @@ let snap = new midTransClient.Snap({
 
 export const createOrder = async (req, res) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: 'Order data is required',
+      });
+    }
+
     const newOrder = await Order.create(req.body);
     const customer = await Customer.findOneAndUpdate({
       $or: [{ phone: req.body.phone }, { email: req.body.email }],
