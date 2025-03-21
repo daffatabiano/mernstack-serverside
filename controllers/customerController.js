@@ -40,14 +40,15 @@ export const getCustomerProfile = async (req, res) => {
         message: 'Customer not found',
       });
     }
+    console.log(customer);
 
     return res.status(200).json({
       success: true,
       statusCode: 200,
       message: 'Customer fetched successfully',
       data: {
-        email: customer.email, // Add email here explicitly
-        ...customer.toObject(), // Spread the rest of the customer data
+        email: customer.email,
+        ...customer.toObject(),
       },
     });
   } catch (err) {

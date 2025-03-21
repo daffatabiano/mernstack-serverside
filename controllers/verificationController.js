@@ -58,9 +58,7 @@ export const sendEmail = async (email, otp) => {
     `,
   };
 
-  await transporter
-    .sendMail(mailOptions)
-    .then((res) => console.log(res, 'result sendemail'));
+  await transporter.sendMail(mailOptions);
 };
 
 export const sendOTP = async (req, res) => {
@@ -129,7 +127,6 @@ export const verifyOTP = async (req, res) => {
       data: user,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

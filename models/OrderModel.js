@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const OrderItemSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId, // Pastikan ID tetap sesuai format MongoDB
+  _id: mongoose.Schema.Types.ObjectId,
   category: {
     type: String,
     required: true,
