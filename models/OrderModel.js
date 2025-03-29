@@ -62,7 +62,7 @@ const OrderSchema = new mongoose.Schema(
       required: true,
     },
     orderData: {
-      type: [OrderItemSchema], // Menggunakan sub-schema untuk order items
+      type: [String], // Menggunakan sub-schema untuk order items
       required: true,
     },
     status: {

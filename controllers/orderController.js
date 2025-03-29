@@ -4,7 +4,7 @@ import midTransClient from 'midtrans-client';
 
 let snap = new midTransClient.Snap({
   isProduction: false,
-  serverKey: 'SB-Mid-server-xrqyBbFmyc1Oco4RkTstzmbj',
+  serverKey: process.env.MIDTRANS_SERVER_KEY,
 });
 
 export const createOrder = async (req, res) => {
