@@ -1,10 +1,12 @@
 import Order from '../models/OrderModel.js';
 import Customer from '../models/customerModel.js';
 import midTransClient from 'midtrans-client';
+const serverKey =
+  process.env.MIDTRANS_SERVER_KEY || 'SB-Mid-server-xrqyBbFmyc1Oco4RkTstzmbj';
 
 let snap = new midTransClient.Snap({
   isProduction: false,
-  serverKey: process.env.MIDTRANS_SERVER_KEY,
+  serverKey: serverKey,
 });
 
 export const createOrder = async (req, res) => {
