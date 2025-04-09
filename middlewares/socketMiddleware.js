@@ -1,5 +1,5 @@
 const socketMiddleware = (req, res, next) => {
-  req.io = req.app.get('io');
+  req.io = io;
   next();
 };
 

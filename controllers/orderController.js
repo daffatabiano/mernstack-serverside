@@ -11,6 +11,7 @@ let snap = new midTransClient.Snap({
 
 export const createOrder = async (req, res) => {
   try {
+    // Check if order data is provided
     if (!req.body) {
       return res.status(400).json({
         success: false,
@@ -19,11 +20,19 @@ export const createOrder = async (req, res) => {
       });
     }
 
+    // Create a new order from the request body
     const newOrder = await Order.create(req.body);
-    const customer = await Customer.findOneAndUpdate({
-      $or: [{ phone: req.body.phone }, { email: req.body.email }],
-    });
 
+    // Find and update the customer based on phone or email
+    const customer = await Customer.findOneAndUpdate(
+      {
+        $or: [{ phone: req.body.phone }, { email: req.body.email }],
+      },
+      { $push: { order: newOrder._id } }, // Add order to the customer's order array
+      { new: true }
+    );
+
+    // If no customer is found, return an error response
     if (!customer) {
       return res.status(404).json({
         success: false,
@@ -31,12 +40,23 @@ export const createOrder = async (req, res) => {
         message: 'Customer not found',
       });
     }
-    req.io.emit('newOrder', newOrder);
 
-    customer.order.push(newOrder);
+    // Emit the 'newOrder' event to all connected sockets
+    if (req.io) {
+      req.io.emit('newOrder', {
+        orderId: newOrder._id,
+        customer: customer.name, // Send relevant customer details with the order
+        orderDetails: newOrder,
+      });
+    } else {
+      console.warn('Socket.io is not initialized or req.io is not available.');
+    }
+
+    // Save the order and customer
     await newOrder.save();
     await customer.save();
 
+    // Respond with the created order
     return res.status(201).json({
       success: true,
       statusCode: 201,
@@ -44,10 +64,13 @@ export const createOrder = async (req, res) => {
       data: newOrder,
     });
   } catch (error) {
+    // Handle errors properly
+    console.error('Error creating order:', error);
     return res.status(500).json({
       success: false,
       statusCode: 500,
-      message: error,
+      message: 'An error occurred while creating the order.',
+      error: error.message,
     });
   }
 };
