@@ -31,13 +31,15 @@ export const createOrder = async (req, res) => {
         message: 'Customer not found',
       });
     }
+    req.io.emit('newOrder', newOrder);
 
     customer.order.push(newOrder);
+    await newOrder.save();
     await customer.save();
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
-      statusCode: 200,
+      statusCode: 201,
       message: 'Order created successfully',
       data: newOrder,
     });

@@ -10,10 +10,11 @@ import {
   paymentOrder,
 } from '../controllers/orderController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
+import socketMiddleware from '../middlewares/socketMiddleware.js';
 
 const router = express.Router();
 
-router.post('/api/v1/order', createOrder); //client route
+router.post('/api/v1/order', socketMiddleware, createOrder); //client route
 router.get('/api/v1/orders', verifyToken, getOrders); // cashier route
 router.get('api/v1/order/:id', verifyToken, getOrderById); //cashier route
 router.put('/api/v1/cashier/collect-orders/:id', verifyToken, collectOrders); //cashier route
