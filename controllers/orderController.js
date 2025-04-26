@@ -1,6 +1,7 @@
 import Order from '../models/OrderModel.js';
 import Customer from '../models/customerModel.js';
 import midTransClient from 'midtrans-client';
+import pusher from '../sockets/pusher.js';
 const serverKey =
   process.env.MIDTRANS_SERVER_KEY || 'SB-Mid-server-xrqyBbFmyc1Oco4RkTstzmbj';
 
@@ -41,16 +42,7 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    // Emit the 'newOrder' event to all connected sockets
-    if (req.io) {
-      req.io.emit('newOrder', {
-        orderId: newOrder._id,
-        customer: customer.name, // Send relevant customer details with the order
-        orderDetails: newOrder,
-      });
-    } else {
-      console.warn('Socket.io is not initialized or req.io is not available.');
-    }
+    pusher.trigger('orders', 'newOrder', newOrder);
 
     // Save the order and customer
     await newOrder.save();
